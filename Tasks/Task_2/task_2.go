@@ -73,13 +73,14 @@ func main() {
 
 	allData := make([]Participant, 0, 5000000)
 
-	startId := make([]int32, 0, M)
-	endId := make([]int32, 0, M)
-	cursorId := make([]int32, 0, M)
+	startId := make([]int32, M+1)
+	endId := make([]int32, M+1)
+	cursorId := make([]int32, M+1)
+	lastIndx := 0
 
 	for m := int32(0); m < M; m++ {
 		L, _ := readInt(reader)
-		startId = append(startId, int32(len(allData)))
+		startId[lastIndx] = int32(len(allData))
 		flag := true
 
 		for l := int32(0); l < L; l++ {
@@ -91,20 +92,23 @@ func main() {
 				heap.Push(&pq, participant)
 				flag = false
 			}
+
 		}
-		endId = append(endId, int32(len(allData))-1)
-		cursorId = append(cursorId, int32(0))
-		_ = cursorId
+		endId[lastIndx] = int32(len(allData)) - 1
+		lastIndx += 1
 	}
 
 	lastId := int32(-1)
+	outBuf := make([]byte, 0, 32)
 	for pq.Len() > 0 {
 		top := heap.Pop(&pq).(Participant)
 		if top.Id > lastId {
-			answer := strconv.Itoa(int(top.Id)) + " " + strconv.Itoa(int(top.Score)) + "\n"
-			writer.WriteString(answer)
-			lastId = top.Id
-		} else {
+			outBuf = outBuf[:0] // Быстрый сброс длины буфера
+			outBuf = strconv.AppendInt(outBuf, int64(top.Id), 10)
+			outBuf = append(outBuf, ' ')
+			outBuf = strconv.AppendInt(outBuf, int64(top.Score), 10)
+			outBuf = append(outBuf, '\n')
+			writer.Write(outBuf)
 			lastId = top.Id
 		}
 		protocolId := top.ProtocolId
