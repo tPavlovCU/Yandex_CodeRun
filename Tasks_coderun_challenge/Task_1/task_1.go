@@ -25,19 +25,20 @@ func readInt(reader *bufio.Reader) (int64, bool) {
 	return res, true
 }
 
-func writeInt64(w *bufio.Writer, n int64) {
+func writeInt32(writer *bufio.Writer, n int32) {
 	if n == 0 {
-		w.WriteByte('0')
+		writer.WriteByte('0')
 		return
 	}
-	var buf [24]byte
+
+	var buf [20]byte
 	pos := len(buf)
 	for n > 0 {
 		pos--
-		buf[pos] = byte('0' + n%10)
+		buf[pos] = byte((n % 10) + '0')
 		n /= 10
 	}
-	w.Write(buf[pos:])
+	writer.Write(buf[pos:])
 }
 
 func main() {
