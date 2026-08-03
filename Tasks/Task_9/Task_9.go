@@ -80,8 +80,8 @@ func main() {
 		new := make([]int, 0, N)
 		graph = append(graph, new)
 	}
-	visited := make([]bool, N+1)
-	visited[0] = true
+	visited := make([]int, N+1)
+	visited[0] = 1
 	for m := range M {
 		_ = m
 		p1 := readInt(reader)
@@ -89,26 +89,5 @@ func main() {
 		graph[p1] = append(graph[p1], p2)
 		graph[p2] = append(graph[p2], p1)
 	}
-	fullRes := make([]map[int]struct{}, 0)
-	for idx := 1; idx < len(visited); idx++ {
-		value := visited[idx]
-		if !value {
-			result := make(map[int]struct{})
-			findNeighbours(idx, graph, visited, result)
-			fullRes = append(fullRes, result)
-		}
 
-	}
-	writeInt(writer, len(fullRes))
-	writer.WriteByte('\n')
-	for _, res := range fullRes {
-		writeInt(writer, len(res))
-		writer.WriteByte('\n')
-
-		for key := range res {
-			writeInt(writer, key)
-			writer.WriteByte(' ')
-		}
-		writer.WriteByte('\n')
-	}
 }
